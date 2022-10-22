@@ -4,7 +4,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import tacos.data.IngredientRepository;
+import tacos.data.UserRepository;
 
 import java.util.List;
 
@@ -16,7 +18,9 @@ public class TacoCloudApplication {
     }
 
     @Bean
-    public CommandLineRunner dataLoader(IngredientRepository repo) {
+    public CommandLineRunner dataLoader(IngredientRepository repo,
+                                        UserRepository userRepo,
+                                        PasswordEncoder encoder) {
         return args -> {
             var ingredients = List.of(
                     new Ingredient("FLTO", "Flour Tortilla", Ingredient.Type.WRAP),
@@ -31,6 +35,10 @@ public class TacoCloudApplication {
                     new Ingredient("SRCR", "Sour Cream", Ingredient.Type.SAUCE)
             );
             repo.saveAll(ingredients);
+            var user = new User();
+            user.setUsername("blessed");
+            user.setPassword(encoder.encode("secret"));
+            userRepo.save(user);
         };
     }
 }
